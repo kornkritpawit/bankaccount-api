@@ -3,6 +3,7 @@ package th.ac.ku.bankaccount.controller;
 import org.springframework.web.bind.annotation.*;
 import th.ac.ku.bankaccount.data.BankAccountRepository;
 import th.ac.ku.bankaccount.model.BankAccount;
+import th.ac.ku.bankaccount.model.Money;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,19 +55,60 @@ public class BankAccountRestController {
     @PutMapping("/{id}")
     public BankAccount update(@PathVariable int id,
                               @RequestBody BankAccount bankAccount) {
-        BankAccount record = repository.findById(id).get();
-        record.setBalance(bankAccount.getBalance());
-        repository.save(record);
-        return record;
+        try {
+            BankAccount record = repository.findById(id).get();
+            record.setBalance(bankAccount.getBalance());
+            repository.save(record);
+            return record;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+
+    }
+
+    @PutMapping("/deposit/{id}")
+    public BankAccount deposit(@PathVariable int id,
+                              @RequestBody Money money) {
+        try {
+            BankAccount record = repository.findById(id).get();
+//        System.out.println(money);
+//        System.out.println(money.getMoney());
+//        System.out.println(record.getBalance() + money.getMoney());
+            record.setBalance(record.getBalance() + money.getMoney());
+//        System.out.println(record);
+            repository.save(record);
+            return record;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    @PutMapping("/withdraw/{id}")
+    public BankAccount withdraw(@PathVariable int id,
+                               @RequestBody Money money) {
+        try {
+            BankAccount record = repository.findById(id).get();
+//        System.out.println(money);
+//        System.out.println(money.getMoney());
+//        System.out.println(record.getBalance() + money.getMoney());
+            record.setBalance(record.getBalance() - money.getMoney());
+//        System.out.println(record);
+            repository.save(record);
+            return record;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @DeleteMapping("/{id}")
     public BankAccount delete(@PathVariable int id) {
-        BankAccount record = repository.findById(id).get();
-        repository.deleteById(id);
-        return record;
+        try {
+            BankAccount record = repository.findById(id).get();
+            repository.deleteById(id);
+            return record;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+
     }
-
-
-
 }
